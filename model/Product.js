@@ -54,6 +54,12 @@ const Product = mongoose.Schema({
 	VendorId : {
         type : mongoose.Schema.ObjectId,
         ref : "User"
+    },
+    ExpiryDate : {
+        type : Date
+    },
+    ManufactureDate : {
+        type : Date
     }
 
 })

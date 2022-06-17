@@ -5,12 +5,12 @@ const User = require("../model/User")
 exports.AuthorizeUser = async (req, res , next) => {
     try {
         const token = req.cookies.token;
-        console.log("token is " + token)
+        // console.log("token is " + token)
         const verifyuser = jwt.verify(token , process.env.SECRET_KEY)
-        console.log("verifytiken is " )
-        console.log(verifyuser)
+        // console.log("verifytiken is " )
+        // console.log(verifyuser)
         const UserId = await User.findById(verifyuser.id);
-        console.log("data is " + UserId)
+        // console.log("data is " + UserId)
         if (!UserId) {
             throw new Error("Employee Is Not FOund")
         }

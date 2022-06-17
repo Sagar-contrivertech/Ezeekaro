@@ -36,6 +36,10 @@ app.use("/Category" , Category)
 const Product = require("./Routes/ProductRoutes")
 app.use("/Product" , Product)
 
+// Location Routes 
+const Location = require("./Routes/LocationRoutes")
+app.use("/Location" , Location)
+
 
 // app.get("/" , (req, res) => {
 //     res.json({message : "Hello"})

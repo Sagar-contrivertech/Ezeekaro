@@ -40,3 +40,22 @@ exports.AddCategory = async (req, res) => {
         res.status(400).json({error : "We Cannot Add Category"})
     }
 }
+
+exports.GetAllCategory = async (req, res) => {
+    try {
+        const categorys = await Category.find();
+
+        if (!categorys) {
+            res.status(400).json({error : "We Cannot Get Category List"})
+            return
+        }
+
+        if (categorys) {
+            res.status(200).json({message : "We  Get Category List" , categorys})
+            return
+        }
+        
+    } catch (error) {
+        res.status(400).json({error : "We Cannot Get Category"})
+    }
+}

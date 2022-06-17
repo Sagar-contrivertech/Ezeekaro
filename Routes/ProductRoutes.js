@@ -8,4 +8,8 @@ route.post("/AddProduct" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductCo
 
 route.get("/GetProduct" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.GetProduct)
 
+route.put("/UpdateProduct/:id" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.UpdateProduct)
+
+route.delete("/DeleteProduct/:id" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.DeleteProduct)
+
 module.exports = route

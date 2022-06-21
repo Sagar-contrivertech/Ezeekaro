@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const sendEmail = require("../middleware/SendMail");
 const generator = require('generate-password');
+const Coupon = require("../model/Coupon");
 
 exports.RegisterUser = async (req, res) => {
     try {
@@ -85,6 +86,31 @@ exports.GetAllUser = async (req, res) => {
     try {
         
         const FindUsers = await User.find();
+
+        if (!FindUsers) {
+            res.status(400).json({error : "All User Not FOund"})
+            return
+        }
+        
+        if (FindUsers) {
+            res.status(200).json({message : "Users FOund" , FindUsers})
+            return
+        }
+    } catch (error) {
+        res.status(400).json({error : "All User Is Not FOund"})
+    }
+}
+
+exports.GetAllUserWithCoupen = async (req, res) => {
+    try {
+        const FindUsers = await User.find({CouponCodes : req.body.id});
+
+        // for (let i = 0; i < FindUsers.CouponCodes.length; i++) {
+            // const findcoupon = await Coupon.findById(FindUsers.CouponCodes[i].code_id);
+
+        //     console.log(findcoupon , "hello")
+        // }
+        
 
         if (!FindUsers) {
             res.status(400).json({error : "All User Not FOund"})

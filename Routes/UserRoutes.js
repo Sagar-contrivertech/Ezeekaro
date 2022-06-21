@@ -11,7 +11,10 @@ route.post("/LoginUser" , UserController.LoginUser)
 
 route.get("/GetUsers" , AuthorizeUser , UserController.GetAllUser)
 
+route.get("/GetUsersWithCoupon" , AuthorizeUser , UserController.GetAllUser)
+
 route.put("/UpdateDeliveryStatus/:id" , AuthorizeUser , authorizeRoles('admin') , UserController.activateDelivery)
+
 
 
 module.exports = route

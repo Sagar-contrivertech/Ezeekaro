@@ -40,6 +40,10 @@ app.use("/Product" , Product)
 const Location = require("./Routes/LocationRoutes")
 app.use("/Location" , Location)
 
+// Coupon Routes 
+const Coupon = require("./Routes/CouponRoutes")
+app.use("/Coupon" , Coupon)
+
 
 // app.get("/" , (req, res) => {
 //     res.json({message : "Hello"})

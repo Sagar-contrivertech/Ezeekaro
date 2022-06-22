@@ -4,7 +4,7 @@ const CouponController = require("../Controller/CouponController")
 const { AuthorizeUser , authorizeRoles} = require("../middleware/Authorize")
 
 
-route.post("/GenerateCode" , CouponController.GenerateCouponCode)
+route.post("/GenerateCode" ,AuthorizeUser, CouponController.GenerateCouponCode)
 
 // apply coupen api
 route.put("/ApplyCoupen/:id" , AuthorizeUser , CouponController.ApplyCoupenCode)

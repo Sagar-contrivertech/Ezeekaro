@@ -31,3 +31,14 @@ exports.authorizeRoles = (...roles) => {
         next()
     }
 }
+
+exports.authorizeGrant = (...grant) => {
+    console.log(grant)
+    return async (req, res, next) => {
+        if (!grant.includes(req.UserId.Permission)) {
+            console.log(req.UserId.Permission, 'Permission');
+            return next(res.json("permission not allowed"))
+        }
+        next()
+    }
+}

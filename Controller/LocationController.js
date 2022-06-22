@@ -12,7 +12,7 @@ exports.FindNearProductLocation = async (req, res) => {
             res.status(400).json({ error: "Location data is not found" })
             return
         }
-
+        
         if (Location) {
             for (let index = 0; index < Location.length; index++) {
                 const productwithlocation = await Product.find({ VendorId: Location[index].id })

@@ -66,6 +66,10 @@ const User = mongoose.Schema({
     type: String,
     // required : true
   },
+  Permission:{
+    type:String,
+    default:"read"
+  },
   Role: {
     type: String,
     default: "admin", // this going to change
@@ -75,13 +79,12 @@ const User = mongoose.Schema({
     default: "inactive",
   },
   CouponCodes: {
-    code_id : {
-        type: mongoose.Schema.ObjectId,
-        ref : "Coupon"
+    code_id: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Coupon"
     },
-    Status : {
-        type : Boolean,
-        default : false
+    Status: {
+      type: String
     }
   },
 });

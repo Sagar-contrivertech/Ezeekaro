@@ -34,7 +34,7 @@ exports.RegisterUser = async (req, res) => {
                 await sendEmail({
                     email: Email,
                     subject: `SuccessFull Registeration ${users.firstName} Hello`,
-                    message : "This is Registration message",
+                    message : "This is Registration message, please wait for your kyc !",
                 });
             }
 

@@ -17,6 +17,11 @@ route.get("/GetUsersWithCoupon" , AuthorizeUser , UserController.GetAllUser)
 
 route.put("/UpdateDeliveryStatus/:id" , AuthorizeUser, authorizeRoles('admin') , UserController.activateDelivery)
 
+route.post("/LogoutUser" , AuthorizeUser , UserController.LogoutUser)
+
+route.post("/UpdateUserProfile" , AuthorizeUser , UserController.updateUserProfile)
+
+// route.post("/ForgotPasswordUser" , AuthorizeUser , UserController.forgotPassword)
 // chnage permsionn routes 
 
 route.put('/change/permission/:id',AuthorizeUser,authorizeRoles('admin'),RoleController.changePermission)

@@ -2,8 +2,9 @@ const express = require("express")
 const mongoose = require("mongoose")
 const Category = require("../model/Category")
 const cloudinary = require("cloudinary")
+const catchasync = require("../middleware/catchasync");
 
-exports.AddCategory = async (req, res) => {
+exports.AddCategory = catchasync(async (req, res) => {
     try {
         const { Name , Image } = req.body
 
@@ -39,9 +40,9 @@ exports.AddCategory = async (req, res) => {
         console.log(error);
         res.status(400).json({error : "We Cannot Add Category"})
     }
-}
+})
 
-exports.GetAllCategory = async (req, res) => {
+exports.GetAllCategory = catchasync(async (req, res) => {
     try {
         const categorys = await Category.find();
 
@@ -58,4 +59,4 @@ exports.GetAllCategory = async (req, res) => {
     } catch (error) {
         res.status(400).json({error : "We Cannot Get Category"})
     }
-}
+})

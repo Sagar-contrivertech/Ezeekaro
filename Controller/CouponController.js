@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const Coupon = require("../model/Coupon");
 const User = require("../model/User");
+const catchasync = require("../middleware/catchasync");
 
-exports.GenerateCouponCode = async (req, res) => {
+exports.GenerateCouponCode = catchasync(async (req, res) => {
   try {
     const { Start_Date, End_Date, Status, Code } = req.body;
     let Coupons = await Coupon.create({
@@ -43,10 +44,10 @@ exports.GenerateCouponCode = async (req, res) => {
     console.log(error);
     res.status(400).json({ error: "We Unable To Generate Code " });
   }
-};
+})
 
 
-exports.ApplyCoupenCode = async (req, res) => {
+exports.ApplyCoupenCode = catchasync(async (req, res) => {
   try {
     const CheckUser = await User.findById(req.params.id);
 
@@ -107,7 +108,7 @@ exports.ApplyCoupenCode = async (req, res) => {
     console.log(error);
     res.status(400).json({ error: "We Unable To Generate Code " });
   }
-}
+})
 
 
 

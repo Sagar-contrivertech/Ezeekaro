@@ -1,11 +1,11 @@
 const Product = require("../model/Product");
 const User = require("../model/User")
+const catchasync = require("../middleware/catchasync");
 
-exports.FindNearProductLocation = async (req, res) => {
+exports.FindNearProductLocation = catchasync(async (req, res) => {
     try {
         var AllProduct = [];
 
-        let array = []
         const pincode = req.params.pincode
         const Location = await User.find({ Pincode: pincode, Role: "Vendor" });
 
@@ -13,7 +13,7 @@ exports.FindNearProductLocation = async (req, res) => {
             res.status(400).json({ error: "Location data is not found" })
             return
         }
-        // console.log(Location , "location")
+        
         if (Location) {
             for (let index = 0; index < Location.length; index++) {
                 const productwithlocation = await Product.find({ VendorId: Location[index].id })
@@ -32,4 +32,4 @@ exports.FindNearProductLocation = async (req, res) => {
         console.log(error)
         res.status(400).json({ error: "We unable to Find data" })
     }
-}
+})

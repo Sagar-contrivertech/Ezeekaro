@@ -1,7 +1,7 @@
 const Users = require('../model/User')
+const catchasync = require("../middleware/catchasync");
 
-
-exports.changePermission = async (req, res) => {
+exports.changePermission = catchasync(async (req, res) => {
     try {
         const users = await Users.findById(req.params.id)
         if (!users) {
@@ -22,4 +22,4 @@ exports.changePermission = async (req, res) => {
         res.status(500).json({ message: "somethimg went wrong !" })
         console.log(err)
     }
-}
+})

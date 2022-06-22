@@ -1,20 +1,24 @@
 const express = require("express")
 const route = express.Router()
 
-const { AuthorizeUser , authorizeRoles} = require("../middleware/Authorize")
+const { AuthorizeUser , authorizeRoles, authorizeGrant} = require("../middleware/Authorize")
 
+const RoleController = require('../Controller/rolecontroller')
 const UserController = require("../Controller/UserController")
 
-route.post("/RegisterVehicle"  , UserController.RegisterUser)
+
+route.post("/register/user" , UserController.RegisterUser)
 
 route.post("/LoginUser" , UserController.LoginUser)
 
-route.get("/GetUsers" , AuthorizeUser , UserController.GetAllUser)
+route.get("/GetUsers" , AuthorizeUser ,authorizeGrant('read'), UserController.GetAllUser)
 
 route.get("/GetUsersWithCoupon" , AuthorizeUser , UserController.GetAllUser)
 
-route.put("/UpdateDeliveryStatus/:id" , AuthorizeUser , authorizeRoles('admin') , UserController.activateDelivery)
+route.put("/UpdateDeliveryStatus/:id" , AuthorizeUser, authorizeRoles('admin') , UserController.activateDelivery)
 
+// chnage permsionn routes 
 
+route.put('/change/permission/:id',AuthorizeUser,authorizeRoles('admin'),RoleController.changePermission)
 
 module.exports = route

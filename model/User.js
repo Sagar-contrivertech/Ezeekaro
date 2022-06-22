@@ -72,7 +72,7 @@ const User = mongoose.Schema({
   },
   Role: {
     type: String,
-    default: "admin", // this going to change
+    default: "user", // this going to change
   },
   Status: {
     type: String,

@@ -1,7 +1,8 @@
 const Product = require("../model/Product");
 const User = require("../model/User")
+const catchasync = require("../middleware/catchasync");
 
-exports.FindNearProductLocation = async (req, res) => {
+exports.FindNearProductLocation = catchasync(async (req, res) => {
     try {
         var AllProduct = [];
 
@@ -31,4 +32,4 @@ exports.FindNearProductLocation = async (req, res) => {
         console.log(error)
         res.status(400).json({ error: "We unable to Find data" })
     }
-}
+})

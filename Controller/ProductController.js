@@ -1,7 +1,8 @@
 const Product = require("../model/Product")
 const cloudinary = require("cloudinary")
+const catchasync = require("../middleware/catchasync");
 
-exports.AddProducts = async (req, res) => {
+exports.AddProducts = catchasync(async (req, res) => {
     try {
         const {Name , Description , CategoryId , Image , IsFeatured , Quantity , price , IsDiscount , Reviews , IsPromotion , VendorId} = req.body;
 
@@ -37,9 +38,9 @@ exports.AddProducts = async (req, res) => {
         console.log(error)
         res.status(400).json({error : "Cannot Add Product"})
     }
-}
+})
 
-exports.GetProduct = async (req, res) => {
+exports.GetProduct = catchasync(async (req, res) => {
     try {
         const products = await Product.find({VendorId : req.UserId._id})
         console.log(req.UserId)
@@ -55,9 +56,9 @@ exports.GetProduct = async (req, res) => {
     } catch (error) {
         res.status(400).json({error : "Cannot get Product"})
     }
-}
+})
 
-exports.UpdateProduct = async (req, res) => {
+exports.UpdateProduct = catchasync(async (req, res) => {
     try {
         const {Name , Description , CategoryId , Image , IsFeatured , Quantity , price , IsDiscount , Reviews , IsPromotion , VendorId} = req.body;
 
@@ -86,9 +87,9 @@ exports.UpdateProduct = async (req, res) => {
     } catch (error) {
         res.status(400).json({error : "Cannot Update Product"})
     }
-}
+})
 
-exports.DeleteProduct = async (req, res) => {
+exports.DeleteProduct = catchasync(async (req, res) => {
     try {
         // const {Name , Description , CategoryId , Image , IsFeatured , Quantity , price , IsDiscount , Reviews , IsPromotion , VendorId} = req.body;
 
@@ -116,4 +117,4 @@ exports.DeleteProduct = async (req, res) => {
     } catch (error) {
         res.status(400).json({error : "Cannot Delete Product"})
     }
-}
+})

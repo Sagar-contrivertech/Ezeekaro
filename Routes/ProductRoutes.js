@@ -6,10 +6,10 @@ const { AuthorizeUser , authorizeRoles} = require("../middleware/Authorize")
 
 route.post("/AddProduct" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.AddProducts)
 
-route.get("/GetProduct" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.GetProduct)
+route.get("/GetProduct" , AuthorizeUser  ,  ProductController.GetProduct)
 
-route.put("/UpdateProduct/:id" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.UpdateProduct)
+route.put("/UpdateProduct/:id" , AuthorizeUser , authorizeRoles("Vendor","admin") ,  ProductController.UpdateProduct)
 
-route.delete("/DeleteProduct/:id" , AuthorizeUser , authorizeRoles("Vendor") ,  ProductController.DeleteProduct)
+route.delete("/DeleteProduct/:id" , AuthorizeUser , authorizeRoles("Vendor","admin") ,  ProductController.DeleteProduct)
 
 module.exports = route

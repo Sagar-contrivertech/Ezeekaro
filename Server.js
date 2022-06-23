@@ -2,7 +2,9 @@ const express = require("express")
 const app = express()
 var cookieParser = require('cookie-parser')
 const cloudinary = require("cloudinary")
-
+var cors = require('cors')
+ 
+app.use(cors())
 const PORT = process.env.PORT || 5000;
 
 // cookies parser for storing and retrive cookies

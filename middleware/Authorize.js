@@ -12,12 +12,13 @@ exports.AuthorizeUser = async (req, res , next) => {
         const UserId = await User.findById(verifyuser.id);
         // console.log("data is " + UserId)
         if (!UserId) {
-            throw new Error("Employee Is Not FOund")
+            throw new Error("user Is Not FOund")
         }
         req.UserId = UserId
 
         next()
     } catch (error) {
+        
         res.status(400).json({message : "User Is Not Register"})
     }
 }

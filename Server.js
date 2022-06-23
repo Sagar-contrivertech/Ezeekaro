@@ -50,9 +50,9 @@ app.use("/Coupon" , Coupon)
 const Cart = require("./Routes/CartRoutes")
 app.use("/Cart" , Cart)
 
-// app.get("/" , (req, res) => {
-//     res.json({message : "Hello"})
-// })
+app.get("/" , (req, res) => {
+    res.json({message : "server is running"})
+})
 
 app.listen(PORT , () => {
     console.log("Port Is running at port no " + PORT);

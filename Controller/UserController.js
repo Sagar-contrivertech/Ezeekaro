@@ -83,6 +83,8 @@ exports.LoginUser = catchasync(async (req, res) => {
     }
 })
 
+// exports.adminLogin = async(req,res)
+
 exports.LogoutUser = async (req, res) => {
     try {
         // console.log(req.UserId)

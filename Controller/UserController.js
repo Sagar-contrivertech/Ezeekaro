@@ -241,6 +241,7 @@ exports.GetAllUser = catchasync(async (req, res) => {
     try {
         
         const FindUsers = await User.find();
+        var count;
 
         if (!FindUsers) {
             res.status(400).json({error : "All User Not FOund"})
@@ -248,7 +249,7 @@ exports.GetAllUser = catchasync(async (req, res) => {
         }
         
         if (FindUsers) {
-            res.status(200).json({message : "Users FOund" , FindUsers})
+            res.status(200).json({message : "Users FOund" , count : FindUsers.length , FindUsers})
             return
         }
     } catch (error) {

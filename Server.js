@@ -44,6 +44,9 @@ app.use("/Location" , Location)
 const Coupon = require("./Routes/CouponRoutes")
 app.use("/Coupon" , Coupon)
 
+// Cart Routes 
+const Cart = require("./Routes/CartRoutes")
+app.use("/Cart" , Cart)
 
 // app.get("/" , (req, res) => {
 //     res.json({message : "Hello"})

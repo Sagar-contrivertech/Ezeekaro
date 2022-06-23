@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-mongoose.connect(process.env.LocalDev).then(() => {
+mongoose.connect(process.env.Dev).then(() => {
     console.log("DataBase Connected")
 }).catch(() => {
     console.log("DataBase Is Not Connected")

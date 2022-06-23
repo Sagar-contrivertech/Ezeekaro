@@ -60,7 +60,7 @@ exports.GetProduct = catchasync(async (req, res) => {
         }
 
         if (products) {
-            res.status(400).json({ error: "get Product List", products })
+            res.status(200).json({ error: "get Product List", products })
             return
         }
     } catch (error) {

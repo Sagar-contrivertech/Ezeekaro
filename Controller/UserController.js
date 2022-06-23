@@ -45,7 +45,7 @@ exports.RegisterUser = catchasync(async (req, res) => {
 
     } catch (error) {
         
-        res.status(400).json({error : "user Is Not Register"})
+        res.status(400).json({error : "user Is Not Register",error})
     }
 })
 

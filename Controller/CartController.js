@@ -1,7 +1,7 @@
 const Cart = require('../model/Cart')
 const Products = require('../model/Product')
-const cartRepository = require('../Controller/Repository')
-// const productRepository = require('../controllers/productrepo')
+const cartRepository = require('./repo/Repository')
+const productRepository = require('./repo/productrepo')
 // const { findById } = require('../models/products')
 
 exports.addCart = async (req, res) => {
@@ -58,6 +58,9 @@ exports.addCart = async (req, res) => {
                 })
                 // cart.subQuantity = cart.items.map(item => item.quantity).reduce((acc, next) => acc + next)
                 cart.subTotal = cart.items.map(item => item.total).reduce((acc, next) => acc + next);
+
+                
+                // console.log(req.params.id , "this is product id");
             }
             // else if (quantity < 1) {
 

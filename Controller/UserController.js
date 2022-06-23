@@ -52,7 +52,7 @@ exports.RegisterUser = catchasync(async (req, res) => {
 exports.LoginUser = catchasync(async (req, res) => {
     try {
         const { Email , Password } = req.body;
-
+        console.log(Email , Password)
         const FindUser = await User.findOne({Email : Email});
 
         if (!FindUser) {

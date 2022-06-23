@@ -14,7 +14,7 @@ exports.addCart = async (req, res) => {
     try {
         let cart = await cartRepository.cart();
         let productDetails = await productRepository.productById(req.params.id);
-        console.log(productDetails.commission, 'klk')
+        // console.log(productDetails.commission, 'klk')
         if (!productDetails) {
             return res.status(500).json({
                 type: "Not Found",

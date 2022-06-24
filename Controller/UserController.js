@@ -74,9 +74,9 @@ exports.LoginUser = catchasync(async (req, res) => {
                     // httpOnly: true
                   });
                 console.log(token)
-                res.cookie("token",token , {
-                    httpOnly: true
-                });
+                // res.cookie("token",token , {
+                //     httpOnly: true
+                // });
                 res.status(200).json({message : "User Is Matched With This Credential " , FindUser , token})
                 return
             }

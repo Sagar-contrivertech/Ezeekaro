@@ -34,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'frontend', 'build')))
 const User = require("./Routes/UserRoutes")
 app.use("/User", User)
 
+app.use('/',express.static('./Frontend'))
+
 // Category Routes 
 const Category = require("./Routes/CategoryRoutes")
 app.use("/Category", Category)
@@ -54,13 +56,13 @@ app.use("/Coupon", Coupon)
 const Cart = require("./Routes/CartRoutes")
 app.use("/Cart", Cart)
 
-// app.get("/", (req, res) => {
-//     res.json({ message: "server is running" })
-// })
-
-app.get("/", async (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'build', 'index.html'))
+app.get("/", (req, res) => {
+    res.json({ message: "server is running" })
 })
+
+// app.get("/", async (req, res) => {
+//     res.sendFile(path.join(__dirname, 'Frontend', 'build', 'index.html'))
+// })
 
 app.listen(PORT, () => {
     console.log("Port Is running at port no " + PORT);

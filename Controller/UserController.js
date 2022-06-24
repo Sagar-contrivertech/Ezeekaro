@@ -71,15 +71,18 @@ exports.LoginUser = catchasync(async (req, res) => {
             if (isMatch) {
                 const token = jwt.sign({ id: FindUser.id }, process.env.SECRET_KEY, {
                     expiresIn: "7d",
-                    httpOnly: true
+                    // httpOnly: true
                   });
                 console.log(token)
-                res.cookie("token",token);
+                res.cookie("token",token , {
+                    httpOnly: true
+                });
                 res.status(200).json({message : "User Is Matched With This Credential " , FindUser , token})
                 return
             }
         }
     } catch (error) {
+        console.log(error)
         res.status(400).json({message : "User Is Not Matched With This Credential " })
     }
 })

@@ -3,7 +3,8 @@ const app = express()
 var cookieParser = require('cookie-parser')
 const cloudinary = require("cloudinary")
 var cors = require('cors')
- 
+const path = require('path')
+
 app.use(cors())
 const PORT = process.env.PORT || 5000;
 
@@ -25,35 +26,42 @@ cloudinary.config({
 
 // initializing that app deal with json data
 app.use(express.json())
+// 
+
+app.use(express.static(path.join(__dirname, 'frontend', 'build')))
 
 // User Routes 
 const User = require("./Routes/UserRoutes")
-app.use("/User" , User)
+app.use("/User", User)
 
 // Category Routes 
 const Category = require("./Routes/CategoryRoutes")
-app.use("/Category" , Category)
+app.use("/Category", Category)
 
 // Category Routes 
 const Product = require("./Routes/ProductRoutes")
-app.use("/Product" , Product)
+app.use("/Product", Product)
 
 // Location Routes 
 const Location = require("./Routes/LocationRoutes")
-app.use("/Location" , Location)
+app.use("/Location", Location)
 
 // Coupon Routes 
 const Coupon = require("./Routes/CouponRoutes")
-app.use("/Coupon" , Coupon)
+app.use("/Coupon", Coupon)
 
 // Cart Routes 
 const Cart = require("./Routes/CartRoutes")
-app.use("/Cart" , Cart)
+app.use("/Cart", Cart)
 
-app.get("/" , (req, res) => {
-    res.json({message : "server is running"})
+app.get("/", (req, res) => {
+    res.json({ message: "server is running" })
 })
 
-app.listen(PORT , () => {
+app.get("/beta", async (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'build', 'index.html'))
+})
+
+app.listen(PORT, () => {
     console.log("Port Is running at port no " + PORT);
 })

@@ -52,7 +52,7 @@ exports.AddProducts = catchasync(async (req, res) => {
 
 exports.GetProduct = catchasync(async (req, res) => {
     try {
-        const products = await Product.find()
+        const products = await Product.find().populate('VendorId')
         console.log(products)
         if (!products) {
             res.status(400).json({ error: "Cannot get Product List" })

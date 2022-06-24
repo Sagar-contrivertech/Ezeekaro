@@ -1,19 +1,19 @@
 const mongoose = require("mongoose")
 
 const Product = mongoose.Schema({
-    Name : {
-        type : String ,
-        required : true
+    Name: {
+        type: String,
+        required: true
     },
-	Description : {
-        type : String ,
-        required : true
+    Description: {
+        type: String,
+        required: true
     },
-	CategoryId : {
-        type : mongoose.Schema.ObjectId ,
-        ref : "Category"
+    CategoryId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Category"
     },
-	Image : [
+    Image: [
         {
             public_id: {
                 type: String,
@@ -23,21 +23,21 @@ const Product = mongoose.Schema({
             }
         }
     ],
-	IsFeatured : {
-        type : Boolean,
+    IsFeatured: {
+        type: Boolean,
     },
-	Quantity : {
-        type : Number,
-        required : true
+    Quantity: {
+        type: Number,
+        required: true
     },
-	price : {
-        type : Number,
-        required : true
+    price: {
+        type: Number,
+        required: true
     },
-	IsDiscount : {
-        type : Boolean,
+    IsDiscount: {
+        type: Boolean,
     },
-	Reviews : [{
+    Reviews: [{
         Name: {
             type: String,
         },
@@ -48,23 +48,26 @@ const Product = mongoose.Schema({
             type: String,
         }
     }],
-	IsPromotion : {
-        type : Boolean,
+    IsPromotion: {
+        type: Boolean,
     },
-	VendorId : {
-        type : mongoose.Schema.ObjectId,
-        ref : "User"
+    VendorId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User"
     },
-    VendorName : {
-        type : String
+    CategoryName: {
+        type: String
     },
-    ExpiryDate : {
-        type : Date
+    VendorName: {
+        type: String
     },
-    ManufactureDate : {
-        type : Date
+    ExpiryDate: {
+        type: Date
+    },
+    ManufactureDate: {
+        type: Date
     }
 
 })
 
-module.exports = mongoose.model("Product" , Product)
+module.exports = mongoose.model("Product", Product)

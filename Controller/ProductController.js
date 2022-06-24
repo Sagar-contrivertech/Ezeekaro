@@ -1,10 +1,18 @@
 const Product = require("../model/Product")
 const cloudinary = require("cloudinary")
 const catchasync = require("../middleware/catchasync");
+const User = require("../model/User");
 
 exports.AddProducts = catchasync(async (req, res) => {
     try {
-        const { Name, Description, CategoryId, Image, IsFeatured, Quantity, price, IsDiscount, Reviews, IsPromotion, VendorId } = req.body;
+        let VendorName
+        const dataName = await User.findById({_id: req.UserId._id})
+        // const vendorName = name.Name
+        // console.log(dataName.Name)
+        VendorName = dataName.Name
+
+        console.log(VendorName)
+        const { Name, Description, CategoryId, Image, IsFeatured, Quantity, price, IsDiscount, Reviews, IsPromotion, VendorId, vendorName } = req.body;
 
         let imagesLinks
 
@@ -29,10 +37,11 @@ exports.AddProducts = catchasync(async (req, res) => {
             price: price,
             IsDiscount: IsDiscount,
             Reviews: Reviews,
+            VendorName:VendorName,
             IsPromotion: IsPromotion,
             VendorId: req.UserId._id
         })
-        // console.log(products)
+        console.log(products)
 
         if (!products) {
             res.status(400).json({ error: "Cannot Add Product With This Information" })
@@ -52,7 +61,7 @@ exports.AddProducts = catchasync(async (req, res) => {
 
 exports.GetProduct = catchasync(async (req, res) => {
     try {
-        const products = await Product.find().populate('VendorId')
+        const products = await Product.find()
         console.log(products)
         if (!products) {
             res.status(400).json({ error: "Cannot get Product List" })
@@ -63,6 +72,7 @@ exports.GetProduct = catchasync(async (req, res) => {
             return
         }
     } catch (error) {
+        console.log(error)
         res.status(400).json({ error: "Cannot get Product" })
     }
 })

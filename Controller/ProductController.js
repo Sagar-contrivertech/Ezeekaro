@@ -2,18 +2,22 @@ const Product = require("../model/Product")
 const cloudinary = require("cloudinary")
 const catchasync = require("../middleware/catchasync");
 const User = require("../model/User");
+const Category = require("../model/Category");
 
 exports.AddProducts = catchasync(async (req, res) => {
     try {
         let VendorName
+        let CategoryName
         const dataName = await User.findById({_id: req.UserId._id})
-        // const vendorName = name.Name
-        // console.log(dataName.Name)
         VendorName = dataName.Name
-
-        console.log(VendorName)
+        console.log(req.body.CategoryId);
+        const CategoryD = await Category.findById({_id: req.body.CategoryId})
+        // const vendorName = name.Name
+        // console.log(CategoryD)
+        CategoryName = CategoryD.Name
+        // console.log(VendorName)
         const { Name, Description, CategoryId, Image, IsFeatured, Quantity, price, IsDiscount, Reviews, IsPromotion, VendorId, vendorName } = req.body;
-
+        
         let imagesLinks
 
         result = await cloudinary.v2.uploader.upload(Image, {
@@ -26,7 +30,7 @@ exports.AddProducts = catchasync(async (req, res) => {
         }
         // console.log("product")
         // console.log(req.UserId)
-
+        
         const products = await Product.create({
             Name: Name,
             Description: Description,
@@ -38,8 +42,10 @@ exports.AddProducts = catchasync(async (req, res) => {
             IsDiscount: IsDiscount,
             Reviews: Reviews,
             VendorName:VendorName,
+            CategoryName:CategoryName,
             IsPromotion: IsPromotion,
-            VendorId: req.UserId._id
+            VendorId: req.UserId._id,
+
         })
         console.log(products)
 

@@ -54,11 +54,11 @@ app.use("/Coupon", Coupon)
 const Cart = require("./Routes/CartRoutes")
 app.use("/Cart", Cart)
 
-app.get("/", (req, res) => {
-    res.json({ message: "server is running" })
-})
+// app.get("/", (req, res) => {
+//     res.json({ message: "server is running" })
+// })
 
-app.get("/beta", async (req, res) => {
+app.get("/", async (req, res) => {
     res.sendFile(path.join(__dirname, 'Frontend', 'build', 'index.html'))
 })
 

@@ -52,13 +52,12 @@ exports.AddProducts = catchasync(async (req, res) => {
 
 exports.GetProduct = catchasync(async (req, res) => {
     try {
-        const products = await Product.find({ VendorId: req.UserId._id })
-        console.log(req.UserId)
+        const products = await Product.find()
+        console.log(products)
         if (!products) {
             res.status(400).json({ error: "Cannot get Product List" })
             return
         }
-
         if (products) {
             res.status(200).json({ message: "get Product List", products })
             return

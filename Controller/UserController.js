@@ -71,6 +71,7 @@ exports.LoginUser = catchasync(async (req, res) => {
             if (isMatch) {
                 const token = jwt.sign({ id: FindUser.id }, process.env.SECRET_KEY, {
                     expiresIn: "7d",
+                    httpOnly: true
                   });
                 console.log(token)
                 res.cookie("token",token);

@@ -13,6 +13,8 @@ route.post("/LoginUser" , UserController.LoginUser)
 
 route.get("/GetUsers" , AuthorizeUser ,authorizeGrant('read'), UserController.GetAllUser)
 
+route.get("/getUserById/:id" , AuthorizeUser ,authorizeGrant('read'), UserController.getUserDataById)
+
 route.get("/GetUsersWithCoupon" , AuthorizeUser , UserController.GetAllUser)
 
 route.put("/UpdateDeliveryStatus/:id" , AuthorizeUser, authorizeRoles('admin') , UserController.activateDelivery)

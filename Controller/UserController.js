@@ -329,3 +329,17 @@ exports.activateDelivery = catchasync(async (req, res) => {
         res.status(400).json({message : "Delivery User Is Not Activate Yet" , })
     }
 })
+
+exports.getUserDataById = catchasync(async(req, res)=>{
+    try {
+        // const id = req.params.id
+        const getUser = await User.findById(req.params.id)
+        if (!getUser) {
+           return res.status(400).json({message : "Cannot find the user"  })
+        }
+        return res.status(200).json({message : "User By Id" , getUser })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message : "Something went wrong" })
+    }
+})

@@ -9,62 +9,62 @@ const catchasync = require("../middleware/catchasync");
 
 exports.RegisterUser = catchasync(async (req, res) => {
     try {
-        const { Name , Email , Contact , Password , Pincode , Pancard , Aadharcard , Address , State , City , Vehical_Modal , Bike_Register_No , Medical_Certificate , Puc_Certificate , Bike_Insurance_Policy , Vehicle_image , Role , Status } = req.body;
+        const { Name, Email, Contact, Password, Pincode, Pancard, Aadharcard, Address, State, City, Vehical_Modal, Bike_Register_No, Medical_Certificate, Puc_Certificate, Bike_Insurance_Policy, Vehicle_image, Role, Status } = req.body;
 
-        const FindUser = await User.findOne({Email : Email});
+        const FindUser = await User.findOne({ Email: Email });
 
         if (FindUser) {
-            res.status(400).json({error : "This Email Id Is Already Register !"})
+            res.status(400).json({ error: "This Email Id Is Already Register !" })
             return
         }
 
         const users = await User.create({
-            Name , Email , Contact , Password , Pincode , Pancard , Aadharcard , Address , State , City , Vehical_Modal , Bike_Register_No , Medical_Certificate , Puc_Certificate , Bike_Insurance_Policy , Vehicle_image , Role , Status
+            Name, Email, Contact, Password, Pincode, Pancard, Aadharcard, Address, State, City, Vehical_Modal, Bike_Register_No, Medical_Certificate, Puc_Certificate, Bike_Insurance_Policy, Vehicle_image, Role, Status
         })
 
         if (!users) {
-            res.status(400).json({error : "user Is Not Registered"})
+            res.status(400).json({ error: "user Is Not Registered" })
             return
         }
-        
+
         if (users) {
             let pass = await users.Bycryptpassword();
 
             await users.save()
-            if (users.Role === "Delivery") {                
+            if (users.Role === "Delivery") {
                 await sendEmail({
                     email: Email,
                     subject: `SuccessFull Registeration ${users.firstName} Hello`,
-                    message : "This is Registration message, please wait for your kyc !",
+                    message: "This is Registration message, please wait for your kyc !",
                 });
             }
 
-            res.status(200).json({message : "User Is Registered" , users})
+            res.status(200).json({ message: "User Is Registered", users })
             return
         }
 
     } catch (error) {
-        
-        res.status(400).json({error : "user Is Not Register",error})
+
+        res.status(400).json({ error: "user Is Not Register", error })
     }
 })
 
 exports.LoginUser = catchasync(async (req, res) => {
     try {
-        const { Email , Password } = req.body;
-        console.log(Email , Password)
-        const FindUser = await User.findOne({Email : Email});
+        const { Email, Password } = req.body;
+        console.log(Email, Password)
+        const FindUser = await User.findOne({ Email: Email });
 
         if (!FindUser) {
-            res.status(400).json({error : "This User Is Not FOund In Our DataBase"})
+            res.status(400).json({ error: "This User Is Not FOund In Our DataBase" })
             return
         }
-        
+
         if (FindUser) {
-            let isMatch = await bcrypt.compare(Password , FindUser.Password)
-            
+            let isMatch = await bcrypt.compare(Password, FindUser.Password)
+
             if (!isMatch) {
-                res.status(400).json({error : "Please Provide Valid Password"})
+                res.status(400).json({ error: "Please Provide Valid Password" })
                 return
             }
 
@@ -72,18 +72,18 @@ exports.LoginUser = catchasync(async (req, res) => {
                 const token = jwt.sign({ id: FindUser.id }, process.env.SECRET_KEY, {
                     expiresIn: "7d",
                     // httpOnly: true
-                  });
+                });
                 console.log(token)
                 // res.cookie("token",token , {
                 //     httpOnly: true
                 // });
-                res.status(200).json({message : "User Is Matched With This Credential " , FindUser , token})
+                res.status(200).json({ message: "User Is Matched With This Credential ", FindUser, token })
                 return
             }
         }
     } catch (error) {
         console.log(error)
-        res.status(400).json({message : "User Is Not Matched With This Credential " })
+        res.status(400).json({ message: "User Is Not Matched With This Credential " })
     }
 })
 
@@ -94,14 +94,14 @@ exports.LogoutUser = async (req, res) => {
         // console.log(req.UserId)
         const Users = req.UserId;
 
-        res.clearCookie('token' , {
-            expiresIn : Date.now()
+        res.clearCookie('token', {
+            expiresIn: Date.now()
         });
 
-        res.status(200).json({message : "User logout " , Users })
+        res.status(200).json({ message: "User logout ", Users })
     } catch (error) {
         console.log(error)
-        res.status(400).json({message : "User cannot logout " })
+        res.status(400).json({ message: "User cannot logout " })
     }
 }
 
@@ -110,22 +110,22 @@ exports.updateUserProfile = async (req, res) => {
         const newUserData = {
             Name: req.body.Name,
             Email: req.body.Email,
-            Contact : req.body.Contact,
-            Password : req.body.Password, 
-            Pincode : req.body.Pincode , 
-            Pancard : req.body.Pancard , 
-            Aadharcard : req.body.Aadharcard , 
-            Address : req.body.Address, 
-            State : req.body.State , 
-            City : req.body.City, 
-            Vehical_Modal : req.body.Vehical_Modal , 
-            Bike_Register_No : req.body.Bike_Register_No, 
-            Medical_Certificate : req.body.Medical_Certificate , 
-            Puc_Certificate : req.body.Puc_Certificate , 
-            Bike_Insurance_Policy : req.body.Bike_Insurance_Policy, 
-            Vehicle_image : req.body.Vehicle_image, 
-            Role : req.body.Role, 
-            Status : req.body.Status
+            Contact: req.body.Contact,
+            Password: req.body.Password,
+            Pincode: req.body.Pincode,
+            Pancard: req.body.Pancard,
+            Aadharcard: req.body.Aadharcard,
+            Address: req.body.Address,
+            State: req.body.State,
+            City: req.body.City,
+            Vehical_Modal: req.body.Vehical_Modal,
+            Bike_Register_No: req.body.Bike_Register_No,
+            Medical_Certificate: req.body.Medical_Certificate,
+            Puc_Certificate: req.body.Puc_Certificate,
+            Bike_Insurance_Policy: req.body.Bike_Insurance_Policy,
+            Vehicle_image: req.body.Vehicle_image,
+            Role: req.body.Role,
+            Status: req.body.Status
         }
 
         // Update avatar
@@ -160,6 +160,7 @@ exports.updateUserProfile = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ message: "something went wrong" })
     }
 
 }
@@ -245,46 +246,46 @@ exports.updateUserProfile = async (req, res) => {
 
 exports.GetAllUser = catchasync(async (req, res) => {
     try {
-        
+
         const FindUsers = await User.find();
         var count;
 
         if (!FindUsers) {
-            res.status(400).json({error : "All User Not FOund"})
+            res.status(400).json({ error: "All User Not FOund" })
             return
         }
-        
+
         if (FindUsers) {
-            res.status(200).json({message : "Users FOund" , count : FindUsers.length , FindUsers})
+            res.status(200).json({ message: "Users FOund", count: FindUsers.length, FindUsers })
             return
         }
     } catch (error) {
-        res.status(400).json({error : "All User Is Not FOund"})
+        res.status(400).json({ error: "All User Is Not FOund" })
     }
 })
 
 exports.GetAllUserWithCoupen = catchasync(async (req, res) => {
     try {
-        const FindUsers = await User.find({CouponCodes : req.body.id});
+        const FindUsers = await User.find({ CouponCodes: req.body.id });
 
         // for (let i = 0; i < FindUsers.CouponCodes.length; i++) {
-            // const findcoupon = await Coupon.findById(FindUsers.CouponCodes[i].code_id);
+        // const findcoupon = await Coupon.findById(FindUsers.CouponCodes[i].code_id);
 
         //     console.log(findcoupon , "hello")
         // }
-        
+
 
         if (!FindUsers) {
-            res.status(400).json({error : "All User Not FOund"})
+            res.status(400).json({ error: "All User Not FOund" })
             return
         }
-        
+
         if (FindUsers) {
-            res.status(200).json({message : "Users FOund" , FindUsers})
+            res.status(200).json({ message: "Users FOund", FindUsers })
             return
         }
     } catch (error) {
-        res.status(400).json({error : "All User Is Not FOund"})
+        res.status(400).json({ error: "All User Is Not FOund" })
     }
 })
 
@@ -293,23 +294,23 @@ exports.activateDelivery = catchasync(async (req, res) => {
         const DeliveryUser = await User.findById(req.params.id)
 
         if (!DeliveryUser) {
-            res.status(400).json({message : "Delivery User Is Not found" })
+            res.status(400).json({ message: "Delivery User Is Not found" })
             return
         }
-        
+
         if (DeliveryUser) {
             const DeliveryPasswordgenerate = generator.generate({
                 length: 10,
                 numbers: true
             });
 
-            const updateUser = await User.findByIdAndUpdate(req.params.id , {
-                Password :  await bcrypt.hash(DeliveryPasswordgenerate , 10),
-                Status : 'active'
-            } , {new : true})
+            const updateUser = await User.findByIdAndUpdate(req.params.id, {
+                Password: await bcrypt.hash(DeliveryPasswordgenerate, 10),
+                Status: 'active'
+            }, { new: true })
 
             if (!updateUser) {
-                res.status(400).json({message : "Update Delivery Is Not Possible" })
+                res.status(400).json({ message: "Update Delivery Is Not Possible" })
                 return
             }
 
@@ -317,29 +318,76 @@ exports.activateDelivery = catchasync(async (req, res) => {
                 await sendEmail({
                     email: DeliveryUser.Email,
                     subject: `SuccessFull Registeration completion Kyc Done `,
-                    message : `Your User Id Is ${DeliveryUser.Email} And Password Is ${DeliveryPasswordgenerate} Kindly Login With This Credential , Thank You.`,
+                    message: `Your User Id Is ${DeliveryUser.Email} And Password Is ${DeliveryPasswordgenerate} Kindly Login With This Credential , Thank You.`,
                 });
-                res.status(200).json({message : "Delivery User Is found" , updateUser })
+                res.status(200).json({ message: "Delivery User Is found", updateUser })
                 return
             }
-            
+
         }
         console.log(DeliveryUser)
     } catch (error) {
-        res.status(400).json({message : "Delivery User Is Not Activate Yet" , })
+        res.status(400).json({ message: "Delivery User Is Not Activate Yet", })
     }
 })
 
-exports.getUserDataById = catchasync(async(req, res)=>{
+exports.getUserDataById = catchasync(async (req, res) => {
     try {
         // const id = req.params.id
         const getUser = await User.findById(req.params.id)
         if (!getUser) {
-           return res.status(400).json({message : "Cannot find the user"  })
+            return res.status(400).json({ message: "Cannot find the user" })
         }
-        return res.status(200).json({message : "User By Id" , getUser })
+        return res.status(200).json({ message: "User By Id", getUser })
     } catch (error) {
         console.log(error);
-        res.status(500).json({message : "Something went wrong" })
+        res.status(500).json({ message: "Something went wrong" })
+    }
+})
+
+
+exports.editProfile = catchasync(async (req, res) => {
+    try {
+        const findUser = await User.findById(req.params.id)
+        if (!findUser) {
+            return res.status(401).json({ message: "user does not exist" })
+        }
+        if (findUser) {
+
+            const newUserData = {
+                Name: req.body.Name,
+                Email: req.body.Email,
+                Contact: req.body.Contact,
+                Password: req.body.Password,
+                Pincode: req.body.Pincode,
+                Pancard: req.body.Pancard,
+                Aadharcard: req.body.Aadharcard,
+                Address: req.body.Address,
+                State: req.body.State,
+                City: req.body.City,
+                Vehical_Modal: req.body.Vehical_Modal,
+                Bike_Register_No: req.body.Bike_Register_No,
+                Medical_Certificate: req.body.Medical_Certificate,
+                Puc_Certificate: req.body.Puc_Certificate,
+                Bike_Insurance_Policy: req.body.Bike_Insurance_Policy,
+                Vehicle_image: req.body.Vehicle_image,
+                Role: req.body.Role,
+                Status: req.body.Status
+            }
+
+            const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+                new: true,
+                runValidators: true,
+                useFindAndModify: false
+            })
+            res.status(200).json({
+                success: true,
+                user
+            })
+            return
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: "something went wrong" })
     }
 })

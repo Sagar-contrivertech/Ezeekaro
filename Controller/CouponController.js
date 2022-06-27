@@ -110,5 +110,46 @@ exports.ApplyCoupenCode = catchasync(async (req, res) => {
   }
 })
 
+exports.generateCouponById = catchasync(async (req, res) => {
+  try {
+    const { Start_Date, End_Date, Status, Code } = req.body;
+    let Coupons = await Coupon.create({
+      Start_Date,
+      End_Date,
+      Status,
+      Code,
+    });
 
+    if (!Coupons) {
+      res
+        .status(400)
+        .json({ error: "We Unable To Generate Code With This Information " });
+      return;
+    }
+
+    if (Coupons) {
+      await Coupons.save();
+      let AllUser = await User.findById(req.params.id);
+      console.log(AllUser)
+      // for (let i = 0; i < AllUser.length; i++) {
+      const UpdateId = await User.findByIdAndUpdate(AllUser._id,
+        {
+          $push: {
+            "CouponCodes": { code_id: Coupons._id, Status: true },
+          }
+        }, { new: true }
+      );
+      console.log(UpdateId);
+    }
+    // res.status(200).json({message : "We Doest find any user for Adding coupon code"})
+    // return
+
+    res.status(200).json({ message: "Code Is Generaed", Coupons });
+    return;
+    // }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "We Unable To Generate Code " });
+  }
+})
 

@@ -23,9 +23,13 @@ route.post("/LogoutUser" , AuthorizeUser , UserController.LogoutUser)
 
 route.post("/UpdateUserProfile" , AuthorizeUser , UserController.updateUserProfile)
 
-// route.post("/ForgotPasswordUser" , AuthorizeUser , UserController.forgotPassword)
+route.post("/ForgotPasswordUser"  , UserController.forgotPassword)
 // chnage permsionn routes 
 
 route.put('/change/permission/:id',AuthorizeUser,authorizeRoles('admin'),RoleController.changePermission)
+
+route.put('/password/reset/:token', UserController.resetPassword)
+
+route.put('/updatepassword', UserController.updatePassword)
 
 module.exports = route

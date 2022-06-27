@@ -4,7 +4,7 @@ const route = express.Router()
 
 const { AuthorizeUser , authorizeRoles} = require("../middleware/Authorize")
 
-route.post("/AddProduct" , AuthorizeUser , authorizeRoles("Vendor","admin") ,  ProductController.AddProducts)
+route.post("/AddProduct" , AuthorizeUser ,  ProductController.AddProducts)
 
 route.get("/GetProduct",  AuthorizeUser,ProductController.GetProduct)
 

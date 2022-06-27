@@ -6,6 +6,10 @@ const sendEmail = require("../middleware/SendMail");
 const generator = require('generate-password');
 const Coupon = require("../model/Coupon");
 const catchasync = require("../middleware/catchasync");
+const crypto = require('crypto')
+// const serviceAccount = require("../secret.json")
+
+// const firebaseToken = 'avgcvghsdvcgvgcgcgvv'
 
 exports.RegisterUser = catchasync(async (req, res) => {
     try {
@@ -31,6 +35,26 @@ exports.RegisterUser = catchasync(async (req, res) => {
             let pass = await users.Bycryptpassword();
 
             await users.save()
+
+            // firebase.initializeApp({
+            //     credential: firebase.credential.cert(serviceAccount),
+            //     databaseURL: "https://ezeekaro-4be30-default-rtdb.firebaseio.com/"
+            // })
+
+            // const payload = {
+            //     notification: {
+            //         title: "Notification Title",
+            //         body: "This is an example notification"
+            //     }
+            // }
+
+            // const options = {
+            //     priority: 'high',
+            //     timeToLive: 60 * 60 * 24, // 1 day
+            // }
+
+            // firebase.messaging().sendToDevice(firebaseToken, payload, options)
+             
             if (users.Role === "Delivery") {                
                 await sendEmail({
                     email: Email,
@@ -165,83 +189,98 @@ exports.updateUserProfile = async (req, res) => {
 }
 
 // forget password
-// exports.forgotPassword = async (req, res, next) => {
-//     const userEmail = await User.findOne({ Email: req.body.Email })
+exports.forgotPassword = async (req, res, next) => {
+    const userEmail = await User.findOne({ Email: req.body.email })
+    console.log(userEmail);
+    if (!userEmail) {
+        return next(res.status(400).json({ message: "Inavlid email" }))
+    }
+    if (userEmail) {
+        const token = userEmail.reset()
+        console.log(userEmail, token);
+        await userEmail.save({ validateBeforeSave: false })
+        // const updateUser = await User.findByIdAndUpdate(userEmail._id,{
+        //     token: token
+        // }, {new:true})
+        // console.log(updateUser);
+        const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${token}`;
 
-//     if (!userEmail) {
-//         return next(res.status(400).json({ message: "Inavlid email" }))
-//     }
+        const message = `your password reset token is followed:\n ${resetUrl}\n if you are not please ingonre`
+        // console.log(message)
+        try {
+            await sendEmail({
+                email: req.body.email,
+                subject: "password reset ",
+                message
+            })
+            console.log(req.body.email, 'emal')
+            res.status(200).json({ message: "email send sucessfully" })
+        } catch (err) {
+            User.getResetpasswordToken = undefined;
+            User.resetpasswordExpire = undefined;
+            await userEmail.save({ validateBeforeSave: false })
+            console.log(err)
+            res.status(400).json({ message: "error while sending email", err })
+        }
+    }
 
-//     console.log(userEmail)
-//     // function getResetpasswordToken() {
+}
 
-//     //     console.log(resetToken, 'r')
-//     //     resetpasswordExpire = Date.now() + 30 * 60 * 1000
-//     // }
-//     // const resetToken = (Math.random() + 1).toString(36).substring(7)
-//     // const resetpasswordExpire = Date.now() + 30 * 60 * 1000
-//     // console.log(resetToken)
-//     if (userEmail) {
-//         // const token = userEmail.reset()
-//         // console.log(token)
-//         await userEmail.save({ validateBeforeSave: false })
+// reset password
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        console.log(resetPasswordToken);
+        const user = await User.findOne({
+            resetPasswordToken,
+            resetpasswordExpire: { $gt: Date.now() }
+        })
+        console.log(user);
+        if (!user) {
+            return next(res.status(400).json({ mesage: "password token invalid or expried", }))
+        }
+        if (!req.body.password == req.body.confirmpassword) {
+            return next(res.status(400).json({ message: "password and confirm password dont match" }))
+        }
+        // user.Password = req.body.password 
+        const salt = await bcrypt.genSalt(10);
+        user.Password = await bcrypt.hash(req.body.password, salt);
+        console.log('password', user.Password)
+        user.resetpassword = undefined;
+        user.resetpasswordExpire = undefined;
 
-//         // const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${token}`;
+        // const userPass = await User.updateOne({Password: user.password})
+        // console.log(userPass);
+        await user.save()
+        console.log(user);
+        res.status(200).json({ message: "password reset ,!go back and login", resetPasswordToken })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ message: "token invalid ! something went wrong" })
+    }
+}
 
-//         // const message = `your password reset token is followed:\n ${resetUrl}\n if you are not please ingonre`
-//         const message = `your password reset token is followed: if you are not please ingonre`
-//         console.log(message)
-//         try {
-//             await sendEmail({
-//                 email: req.body.Email,
-//                 subject: "password reset ",
-//                 message
-//             })
-//             console.log(req.body.Email, 'emal')
-//             res.status(200).json({ message: "email send sucessfully" })
-//         } catch (err) {
+// update Password
 
-//             User.getResetpasswordToken = undefined;
-//             User.resetpasswordExpire = undefined;
-//             await userEmail.save({ validateBeforeSave: false })
-//             console.log(err)
-//             res.status(400).json({ message: "error while sending email", err })
-//         }
-//         return;
-//     }
-
-// }
-
-// // reset password
-// exports.resetPassword = async (req, res, next) => {
-//     try {
-//         const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
-
-//         const user = await User.findOne({
-//             resetPasswordToken,
-//             resetpasswordExpire: { $gt: Date.now() }
-//         })
-//         if (!user) {
-//             return next(res.status(400).json({ mesage: "password token invalid or expried", }))
-//         }
-//         if (!req.body.password == req.body.confirmpassword) {
-//             return next(res.status(400).json({ message: "password and confirm password dont match" }))
-//         }
-//         const salt = await bcrypt.genSalt(10);
-//         user.password = await bcrypt.hash(req.body.password, salt);
-//         console.log('password', user.password)
-//         user.resetpassword = undefined;
-//         user.resetpasswordExpire = undefined;
-
-
-//         await user.save()
-//         res.status(200).json({ message: "password reset ,!go back and login", resetPasswordToken })
-//     } catch (err) {
-//         console.log(err)
-//         res.status(400).json({ message: "token invalid ! something went wrong" })
-//     }
-// }
-
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id).select('+password')
+        if (!user) {
+            res.status(401).json({ message: "user not found" })
+        }
+        const isMatched = await user.comparePassword(req.body.oldPassword)
+        if (!isMatched) {
+            return next(res.status(400).json({ message: "old password is incorrect" }))
+        }
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(req.body.password, salt);
+        await user.save();
+        res.status(200).json({ message: "password update sucessfuly" })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ message: "something went wrong" })
+    }
+}
 
 exports.GetAllUser = catchasync(async (req, res) => {
     try {

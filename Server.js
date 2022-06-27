@@ -26,15 +26,11 @@ cloudinary.config({
 
 // initializing that app deal with json data
 app.use(express.json())
-// 
-
-app.use(express.static(path.join(__dirname, 'frontend', 'build')))
 
 // User Routes 
 const User = require("./Routes/UserRoutes")
 app.use("/User", User)
 
-app.use('/',express.static('./Frontend'))
 
 // Category Routes 
 const Category = require("./Routes/CategoryRoutes")
@@ -55,6 +51,10 @@ app.use("/Coupon", Coupon)
 // Cart Routes 
 const Cart = require("./Routes/CartRoutes")
 app.use("/Cart", Cart)
+//order routes
+const order = require('./Routes/order')
+app.use('/order',order)
+
 
 app.get("/", (req, res) => {
     res.json({ message: "server is running" })

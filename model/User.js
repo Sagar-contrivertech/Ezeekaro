@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const crypto = require('crypto')
 
 const User = mongoose.Schema({
   Name: {
@@ -50,25 +51,53 @@ const User = mongoose.Schema({
     type: String,
     // required : true
   },
-  Medical_Certificate: {
+  Medical_Certificate: [
+    {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      }
+    }
+  ],
+  Puc_Certificate: [
+    {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      }
+    }
+  ],
+  Bike_Insurance_Policy: [
+    {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      }
+    }
+  ],
+  Vehicle_image: [
+    {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      }
+    }
+  ],
+  Permission: {
     type: String,
     // required : true
   },
-  Puc_Certificate: {
+  Permission: {
     type: String,
-    // required : true
-  },
-  Bike_Insurance_Policy: {
-    type: String,
-    // required : true
-  },
-  Vehicle_image: {
-    type: String,
-    // required : true
-  },
-  Permission:{
-    type:String,
-    default:"read"
+    default: "read"
   },
   Role: {
     type: String,
@@ -87,6 +116,8 @@ const User = mongoose.Schema({
       type: String
     }
   },
+  resetpassword: String,
+  resetpasswordExpire: Date
 });
 
 User.methods.Bycryptpassword = async function () {
@@ -103,5 +134,19 @@ User.methods.Bycryptpassword = async function () {
 //     await this.save();
 //     return tokendhaval;
 // }
+
+User.methods.reset = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex')
+  console.log(resetToken);
+  this.resetpassword = crypto.createHash('sha256').update(resetToken).digest('hex')
+  console.log(this.resetpassword);
+  this.resetpasswordExpire = Date.now() + 30 * 60 * 1000
+  return resetToken;
+}
+
+// compare password methods
+User.methods.comparePassword = async function (enteredpassword) {
+  return await bcrypt.compare(enteredpassword, this.password)
+}
 
 module.exports = mongoose.model("User", User);

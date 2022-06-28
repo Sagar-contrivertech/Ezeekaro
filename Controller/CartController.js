@@ -106,3 +106,114 @@ exports.addCart = async (req, res) => {
         })
     }
 }
+
+exports.getCart = async (req, res) => {
+    try {
+        let cart = await cartRepository.cart()
+        if (!cart) {
+            return res.status(400).json({
+                type: "Invalid",
+                msg: "Cart Not Found",
+            })
+        }
+        console.log(cart);
+        res.status(200).json({
+            status: true,
+            data: cart
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
+            type: "Invalid",
+            msg: "Something Went Wrong",
+            err: err
+        })
+    }
+}
+
+// update 
+
+exports.changeQuantity = async (req, res) => {
+    const quantity = Number.parseInt(req.body.quantity);
+    try {
+        let cart = await cartRepository.cart();
+        let productDetails = await productRepository.productById(req.params.id);
+        console.log(productDetails, 'klk')
+        if (!productDetails) {
+            return res.status(500).json({
+                type: "Not Found",
+                msg: "Invalid request"
+            })
+        }
+        // let data
+        if (cart) {
+            const indexFound = cart.items.findIndex(item => item.productId.id == req.params.id);
+            console.log(indexFound, 'klk')
+            cart.items[indexFound].quantity = cart.items[indexFound].quantity + quantity;
+            cart.items[indexFound].total = cart.items[indexFound].quantity * productDetails.price;
+            cart.items[indexFound].price = productDetails.price
+            // cart.items[indexFound].commission = productDetails.commission
+
+            // cart.subQuantity = cart.items.map(item => item.quantity).reduce((acc, next) => acc + next)
+            cart.subTotal = cart.items.map(item => item.total).reduce((acc, next) => acc + next);
+
+            let data = await cart.save();
+            res.status(200).json({
+                type: "success",
+                mgs: "Process Successful",
+                data: data
+            })
+        }
+
+    } catch (err) {
+        res.status(400).json({ message: "Something went wrong" })
+        console.log(err)
+    }
+}
+
+// empty cart
+
+exports.emptyCart = async (req, res) => {
+    try {
+        let cart = await cartRepository.cart();
+
+        cart.items = [];
+        cart.subTotal = 0
+        let data = await cart.save();
+        res.status(200).json({
+            type: "success",
+            mgs: "Cart Has been emptied",
+            data: data
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
+            type: "Invalid",
+            msg: "Something Went Wrong",
+            err: err
+        })
+    }
+}
+
+exports.deletebyId = async (req, res) => {
+    try {
+        const findcart = await Cart.findById(req.params.id)
+        if (!findcart) {
+            res.status(400).json({ message: "cart does not exist" })
+            return;
+        }
+
+        let cartitems = findcart.items.map(function (item) {
+            return item.id
+        })
+        console.log(cartitems[0])
+        cartitems = req.body.cartitem
+        console.log(cartitems)
+        const deleteid = await Cart.findById(cartitems)
+        console.log(deleteid);
+        res.status(200).json({ message: "cart items delete", deleteid })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: "something went wrong !!!", err })
+    }
+}

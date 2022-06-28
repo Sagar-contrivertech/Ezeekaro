@@ -6,6 +6,12 @@ const sendEmail = require("../middleware/SendMail");
 const generator = require('generate-password');
 const Coupon = require("../model/Coupon");
 const catchasync = require("../middleware/catchasync");
+const crypto = require('crypto')
+const cloudinary = require("cloudinary")
+
+// const serviceAccount = require("../secret.json")
+
+// const firebaseToken = 'avgcvghsdvcgvgcgcgvv'
 
 exports.RegisterUser = catchasync(async (req, res) => {
     try {
@@ -13,13 +19,62 @@ exports.RegisterUser = catchasync(async (req, res) => {
 
         const FindUser = await User.findOne({ Email: Email });
 
+        let medicalImageLinks
+        let pucCertificateLinks 
+        let vehicleImageLinks
+        let bikeInsurancePolicyLinks
+        // Medical_certificate image
+        let imageFolder = []
+        result = await cloudinary.v2.uploader.upload(Medical_Certificate,Puc_Certificate,Vehicle_image,Bike_Insurance_Policy, {
+            folder: 'medicalImage'
+        });
+
+        console.log(result);
+        medicalImageLinks = {
+            public_id: result.public_id,
+            url: result.secure_url
+        }
+        console.log(medicalImageLinks);
+        // Puc image
+        // pucResult = await cloudinary.v2.uploader.upload(Puc_Certificate, {
+        //     folder: 'pucImage'
+        // });
+
+        pucCertificateLinks = {
+            public_id: result.public_id,
+            url: result.secure_url
+        }
+
+        // // // vehicle image
+        // vehicleResult = await cloudinary.v2.uploader.upload(Vehicle_image.tempFilePath, {
+        //     folder: 'vehicleImage'
+        // });
+
+        // vehicleImageLinks = {
+        //     public_id: vehicleResult.public_id,
+        //     url: vehicleResult.secure_url
+        // }
+        // // bike Insurance image
+
+        // bikeResult = await cloudinary.v2.uploader.upload(Bike_Insurance_Policy, {
+        //     folder: 'bikeImage'
+        // });
+
+        // bikeInsurancePolicyLinks = {
+        //     public_id: bikeResult.public_id,
+        //     url: bikeResult.secure_url
+        // }
+
         if (FindUser) {
             res.status(400).json({ error: "This Email Id Is Already Register !" })
             return
         }
 
+
         const users = await User.create({
-            Name, Email, Contact, Password, Pincode, Pancard, Aadharcard, Address, State, City, Vehical_Modal, Bike_Register_No, Medical_Certificate, Puc_Certificate, Bike_Insurance_Policy, Vehicle_image, Role, Status
+            Name , Email , Contact , Password , Pincode , Pancard , Aadharcard , Address , State , City ,
+             Vehical_Modal , Bike_Register_No , Medical_Certificate: medicalImageLinks , Puc_Certificate: pucCertificateLinks , 
+             Bike_Insurance_Policy: bikeInsurancePolicyLinks , Vehicle_image: vehicleImageLinks , Role , Status
         })
 
         if (!users) {
@@ -44,8 +99,8 @@ exports.RegisterUser = catchasync(async (req, res) => {
         }
 
     } catch (error) {
-
-        res.status(400).json({ error: "user Is Not Register", error })
+        console.log(error);
+        res.status(400).json({error : "user Is Not Register",error})
     }
 })
 
@@ -166,83 +221,98 @@ exports.updateUserProfile = async (req, res) => {
 }
 
 // forget password
-// exports.forgotPassword = async (req, res, next) => {
-//     const userEmail = await User.findOne({ Email: req.body.Email })
+exports.forgotPassword = async (req, res, next) => {
+    const userEmail = await User.findOne({ Email: req.body.email })
+    console.log(userEmail);
+    if (!userEmail) {
+        return next(res.status(400).json({ message: "Inavlid email" }))
+    }
+    if (userEmail) {
+        const token = userEmail.reset()
+        console.log(userEmail, token);
+        await userEmail.save({ validateBeforeSave: false })
+        // const updateUser = await User.findByIdAndUpdate(userEmail._id,{
+        //     token: token
+        // }, {new:true})
+        // console.log(updateUser);
+        const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${token}`;
 
-//     if (!userEmail) {
-//         return next(res.status(400).json({ message: "Inavlid email" }))
-//     }
+        const message = `your password reset token is followed:\n ${resetUrl}\n if you are not please ingonre`
+        // console.log(message)
+        try {
+            await sendEmail({
+                email: req.body.email,
+                subject: "password reset ",
+                message
+            })
+            console.log(req.body.email, 'emal')
+            res.status(200).json({ message: "email send sucessfully" })
+        } catch (err) {
+            User.getResetpasswordToken = undefined;
+            User.resetpasswordExpire = undefined;
+            await userEmail.save({ validateBeforeSave: false })
+            console.log(err)
+            res.status(400).json({ message: "error while sending email", err })
+        }
+    }
 
-//     console.log(userEmail)
-//     // function getResetpasswordToken() {
+}
 
-//     //     console.log(resetToken, 'r')
-//     //     resetpasswordExpire = Date.now() + 30 * 60 * 1000
-//     // }
-//     // const resetToken = (Math.random() + 1).toString(36).substring(7)
-//     // const resetpasswordExpire = Date.now() + 30 * 60 * 1000
-//     // console.log(resetToken)
-//     if (userEmail) {
-//         // const token = userEmail.reset()
-//         // console.log(token)
-//         await userEmail.save({ validateBeforeSave: false })
+// reset password
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        console.log(resetPasswordToken);
+        const user = await User.findOne({
+            resetPasswordToken,
+            resetpasswordExpire: { $gt: Date.now() }
+        })
+        console.log(user);
+        if (!user) {
+            return next(res.status(400).json({ mesage: "password token invalid or expried", }))
+        }
+        if (!req.body.password == req.body.confirmpassword) {
+            return next(res.status(400).json({ message: "password and confirm password dont match" }))
+        }
+        // user.Password = req.body.password 
+        const salt = await bcrypt.genSalt(10);
+        user.Password = await bcrypt.hash(req.body.password, salt);
+        console.log('password', user.Password)
+        user.resetpassword = undefined;
+        user.resetpasswordExpire = undefined;
 
-//         // const resetUrl = `${req.protocol}://${req.get('host')}/api/password/reset/${token}`;
+        // const userPass = await User.updateOne({Password: user.password})
+        // console.log(userPass);
+        await user.save()
+        console.log(user);
+        res.status(200).json({ message: "password reset ,!go back and login", resetPasswordToken })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ message: "token invalid ! something went wrong" })
+    }
+}
 
-//         // const message = `your password reset token is followed:\n ${resetUrl}\n if you are not please ingonre`
-//         const message = `your password reset token is followed: if you are not please ingonre`
-//         console.log(message)
-//         try {
-//             await sendEmail({
-//                 email: req.body.Email,
-//                 subject: "password reset ",
-//                 message
-//             })
-//             console.log(req.body.Email, 'emal')
-//             res.status(200).json({ message: "email send sucessfully" })
-//         } catch (err) {
+// update Password
 
-//             User.getResetpasswordToken = undefined;
-//             User.resetpasswordExpire = undefined;
-//             await userEmail.save({ validateBeforeSave: false })
-//             console.log(err)
-//             res.status(400).json({ message: "error while sending email", err })
-//         }
-//         return;
-//     }
-
-// }
-
-// // reset password
-// exports.resetPassword = async (req, res, next) => {
-//     try {
-//         const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
-
-//         const user = await User.findOne({
-//             resetPasswordToken,
-//             resetpasswordExpire: { $gt: Date.now() }
-//         })
-//         if (!user) {
-//             return next(res.status(400).json({ mesage: "password token invalid or expried", }))
-//         }
-//         if (!req.body.password == req.body.confirmpassword) {
-//             return next(res.status(400).json({ message: "password and confirm password dont match" }))
-//         }
-//         const salt = await bcrypt.genSalt(10);
-//         user.password = await bcrypt.hash(req.body.password, salt);
-//         console.log('password', user.password)
-//         user.resetpassword = undefined;
-//         user.resetpasswordExpire = undefined;
-
-
-//         await user.save()
-//         res.status(200).json({ message: "password reset ,!go back and login", resetPasswordToken })
-//     } catch (err) {
-//         console.log(err)
-//         res.status(400).json({ message: "token invalid ! something went wrong" })
-//     }
-// }
-
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id).select('+password')
+        if (!user) {
+            res.status(401).json({ message: "user not found" })
+        }
+        const isMatched = await user.comparePassword(req.body.oldPassword)
+        if (!isMatched) {
+            return next(res.status(400).json({ message: "old password is incorrect" }))
+        }
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(req.body.password, salt);
+        await user.save();
+        res.status(200).json({ message: "password update sucessfuly" })
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ message: "something went wrong" })
+    }
+}
 
 exports.GetAllUser = catchasync(async (req, res) => {
     try {

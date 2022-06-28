@@ -5,4 +5,12 @@ const { AuthorizeUser , authorizeRoles, authorizeGrant} = require("../middleware
 
 route.post("/AddItemToCart/:id" , AuthorizeUser , CartController.addCart)
 
+route.get('/getcart', AuthorizeUser, CartController.getCart)
+
+route.put('/updateQuatity/:id',AuthorizeUser ,CartController.changeQuantity)
+
+route.delete('/deletecart', AuthorizeUser, CartController.emptyCart)
+
+route.delete('/deletecartbyid/:id',AuthorizeUser,CartController.deletebyId)
+
 module.exports = route

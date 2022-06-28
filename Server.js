@@ -51,9 +51,14 @@ app.use("/Coupon", Coupon)
 // Cart Routes 
 const Cart = require("./Routes/CartRoutes")
 app.use("/Cart", Cart)
+
 //order routes
 const order = require('./Routes/order')
 app.use('/order',order)
+
+//Attendance routes
+const Attendance = require('./Routes/AttendanceRoutes')
+app.use('/Attendance',Attendance)
 
 
 app.get("/", (req, res) => {

@@ -60,6 +60,10 @@ app.use('/order',order)
 const Attendance = require('./Routes/AttendanceRoutes')
 app.use('/Attendance',Attendance)
 
+//Salary routes
+const Salary = require('./Routes/SalaryRoutes')
+app.use('/Salary',Salary)
+
 
 app.get("/", (req, res) => {
     res.json({ message: "server is running" })

@@ -5,15 +5,24 @@ const Attendance = mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : "User"
     },
-    ClockIn : {
-        type : String
-    },
-    ClockOut : {
-        type : String
-    },
+    DailyClock : [
+        {
+            ClockIn : {
+                type : String,
+            },
+            ClockOut : {
+                type : String,
+            }
+        }
+    ],
     TotalHours : {
         type : String
+    },
+    Date : {
+        type : Date,
+        default : Date.now()
     }
+    
 })
 
 module.exports = mongoose.model("Attendance" , Attendance);

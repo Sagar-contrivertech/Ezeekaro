@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser')
 const cloudinary = require("cloudinary")
 var cors = require('cors')
 const path = require('path')
+// const fileupload = require('express-fileupload'); 
 
 app.use(cors())
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,11 @@ cloudinary.config({
     api_key: "998169537827179",
     api_secret: "OdZZJsvvLEd6rrDWQb0VqQVFFFg"
 })
+
+app.use(express.json({limit: '500mb'}))
+app.use(express.urlencoded({limit: '500mb', extended: true}))
+// app.use(fileupload())
+// app.use(fileupload({useTempFiles: true}))
 
 // initializing that app deal with json data
 app.use(express.json())

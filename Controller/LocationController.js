@@ -9,7 +9,7 @@ exports.FindNearProductLocation = catchasync(async (req, res) => {
         var AllPincode = req.body.pincode;
         var count;
 
-        let pincodelength = AllPincode.split("/");
+        let pincodelength = AllPincode && AllPincode.split("/");
         // const pincode = req.params.pincode
         for (let i = 0; i < pincodelength.length; i++) {
             const Location = await User.find({ Pincode: pincodelength[i], Role: "Vendor" });
@@ -26,6 +26,7 @@ exports.FindNearProductLocation = catchasync(async (req, res) => {
         if (AllPincodeData) {
             // for (let index = 0; index < Location.length; index++) {
             for (let index = 0; index < AllPincodeData.length; index++) {
+                console.log(AllPincodeData);
                 // const productwithlocation = await Product.find({ VendorId: Location[index].id })
                 const productwithlocation = await Product.find({ VendorId: AllPincodeData[index].id })
                 productwithlocation.map((ele, ind) => {

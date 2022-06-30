@@ -20,10 +20,10 @@ exports.newOrder = catchasync(async (req, res) => {
             payType
         } = req.body
         console.log(req.body.Cart)
+        
+        const userDetails = req.UserId._id
 
-        const userDetails = req.user._id
-
-        console.log(userDetails)
+        console.log(userDetails , "userdetaile")
         const order = await Order.create({
             cart,
             shippingInfo,
@@ -37,23 +37,25 @@ exports.newOrder = catchasync(async (req, res) => {
             payType,
             paidAt: Date.now(),
             PurchasedDate: Date.now(),
-            user: req.user._id
+            user: req.UserId._id
         })
+
         console.log(order, 'orders')
 
         let Id
         if (order) {
-            order.product.map(async (i) => {
-                console.log('hj', i._id, 'jkj')
-                Id = i._id
-                console.log(req.body.sellcounter + 1, 'hdkhkhd')
+            // order.product.map(async (i) => {
+            //     console.log('hj', i._id, 'jkj')
+            //     Id = i._id
+            //     console.log(req.body.sellcounter + 1, 'hdkhkhd')
 
-                const productToUpdate = await products.findByIdAndUpdate(Id, { $inc: { sellcounter: 1 } },);
+            //     // const productToUpdate = await products.findByIdAndUpdate(Id, { $inc: { sellcounter: 1 } },);
 
-                console.log('vdhyd', productToUpdate, 'jkiyth')
-            })
+            //     // console.log('vdhyd', productToUpdate, 'jkiyth')
+            // })
 
             res.status(200).json({ message: "order placed sucessfully", order })
+            return
         }
 
 

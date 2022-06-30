@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router();
 const orderController = require("../Controller/orderController");
-const { AuthorizeUser, authorizeRoles, authorizeGrant } = require("../middleware/Authorize")
+const OrderAssignController = require("../Controller/OrderAssignController");
+// const {isAuthenticated} = require('../middleware/Authorize')
+const { AuthorizeUser , authorizeRoles} = require("../middleware/Authorize")
 
-router.post('/order/new', AuthorizeUser, orderController.newOrder)
+router.post('/order/new', AuthorizeUser ,  orderController.newOrder)
 
 router.get('/order/:id', AuthorizeUser, orderController.getSingleOrder)
 
@@ -12,5 +14,9 @@ router.get('/admin/allorder', AuthorizeUser,
     orderController.allOrders)
 
 router.put('/order/update/:id', AuthorizeUser, orderController.updateStatus)
+
+router.post('/OrderAssign', AuthorizeUser, OrderAssignController.OrderFind)
+
+
 
 module.exports = router

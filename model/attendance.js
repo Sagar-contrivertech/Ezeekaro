@@ -12,16 +12,17 @@ const Attendance = mongoose.Schema({
             },
             ClockOut : {
                 type : String,
+            },
+            Date : {
+                type : Date,
+                default : Date.now()
             }
         }
     ],
     TotalHours : {
         type : String
     },
-    Date : {
-        type : Date,
-        default : Date.now()
-    }
+    
     
 })
 

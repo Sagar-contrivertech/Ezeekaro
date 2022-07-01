@@ -14,7 +14,7 @@ exports.WorkStart = async (req, res) => {
             const UpateUserTime = await Attendance.updateOne({UserId : findiduser.UserId} , {
                  $push: { DailyClock: {
                     "ClockIn" :  DailyClock.ClockIn,
-                    "ClockOut" :  DailyClock.ClockOut
+                    "ClockOut" : ""
                  }} 
             } , {new : true})
 
@@ -126,21 +126,26 @@ exports.ClockoutUpdate = async (req, res) => {
             res.status(400).json({error : "Clockout is not possible in try  "})
             return 
         }
-
+        console.log(findUser)
         if (findUser) {
             try {
-                
-                const Updateclockout = await Attendance.findByIdAndUpdate(findUser._id , {
-                    DailyClock : {
-                    ClockOut : DailyClock.ClockOut
+                const data = findUser[0].DailyClock[DailyClock.length - 1];
+                console.log(data , "data")
+                // 62bc602ca43e694c7e1afec2
+                const Updateclockout = await Attendance.findByIdAndUpdate(findUser[0]._id , {
+                    $set: {
+                        "DailyClock.-1.ClockOut": DailyClock.ClockOut
                     }
+                    // DailyClock : {
+                    //     ClockOut : DailyClock[DailyClock.length - 1].ClockOut = DailyClock.ClockOut
+                    // }
                 } , {new : true})
                 console.log(Updateclockout)
                 if (!Updateclockout) {
                     res.status(400).json({error : "Clockout is not possible in try in try  "})
                     return
                 }
-                
+            
                 if (Updateclockout) {
                     res.status(200).json({message : "Clockout is Updated  " , Updateclockout})
                     return

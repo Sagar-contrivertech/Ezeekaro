@@ -6,7 +6,8 @@ let ItemSchema = new mongoose.Schema({
     ref: "User"
   },
   productId: {
-    type: mongoose.Schema.Types.ObjectId,
+    // type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: "Product",
   },
   quantity: {

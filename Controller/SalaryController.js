@@ -28,7 +28,7 @@ exports.AddSalary = async (req, res) => {
 exports.GetSalary = async (req, res) => {
     try {
 
-        const salarys = await EmpSalary.find();
+        const salarys = await EmpSalary.find().populate("UserId");
 
         if (!salarys) {
             res.status(400).json({error : "Unable to find salary in try"})
@@ -48,7 +48,7 @@ exports.GetSalary = async (req, res) => {
 exports.GetSalaryById = async (req, res) => {
     try {
 
-        const salarys = await EmpSalary.find({UserId : req.params.id});
+        const salarys = await EmpSalary.find({UserId : req.params.id}).populate("UserId");
 
         if (!salarys) {
             res.status(400).json({error : "Unable to find salary in try"})

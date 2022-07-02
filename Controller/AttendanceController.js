@@ -2,30 +2,10 @@ const Attendance = require("../model/attendance");
 
 exports.WorkStart = async (req, res) => {
     try {
-        const { UserId , DailyClock , TotalHours } = req.body;
-        const findiduser = await Attendance.findOne({UserId : UserId});
-        let Hours = TotalHours;
-        let Clockin = DailyClock.ClockIn.split(" ")[0];
-        let Clockout = DailyClock.ClockOut.split(" ")[0];
-        console.log(Clockin)
-        console.log(parseInt(Clockin))
-
-        if (findiduser) {
-            const UpateUserTime = await Attendance.updateOne({UserId : findiduser.UserId} , {
-                 $push: { DailyClock: {
-                    "ClockIn" :  DailyClock.ClockIn,
-                    "ClockOut" : ""
-                 }} 
-            } , {new : true})
-
-            
-            
-            if (UpateUserTime) {
-                res.status(200).json({message : "User is Updated " , UpateUserTime})
-                return
-            }
-        }
-        const createattendance = await Attendance.create({UserId , DailyClock , TotalHours});
+        const { UserId , ClockIn , ClockOut , HalfDays , TotalHours , Remarks , IsRegularization , Date } = req.body;
+        // ClockIn = new Date.now();
+        // console.log(Date.now())
+        const createattendance = await Attendance.create({UserId , ClockIn  , ClockOut , HalfDays , TotalHours , Remarks , IsRegularization , Date});
 
         if (!createattendance) {
             res.status(400).json({error : "We cannot update clock in time in try"})
@@ -82,7 +62,7 @@ exports.GetAllTimeById = async (req, res) => {
 exports.UpdateTime = async (req, res) => {
     try {
 
-        const { UserId , ClockIn , ClockOut , TotalHours } = req.body;
+        const { UserId , ClockIn , ClockOut , HalfDays , TotalHours , Remarks , IsRegularization , Date } = req.body;
 
         const UpdateUserTime = await Attendance.findById(req.params.id);
 
@@ -94,11 +74,8 @@ exports.UpdateTime = async (req, res) => {
         if (UpdateUserTime) {
             
             const UpdateUser = await Attendance.findByIdAndUpdate(req.params.id , {
-                UserId : UserId ,
-                ClockIn : ClockIn,
-                ClockOut : ClockOut,
-                TotalHours : TotalHours
-            });
+                UserId , ClockIn , ClockOut , HalfDays , TotalHours , Remarks , IsRegularization , Date
+            } , { new : true });
             
             if (!UpdateUser) {
                 res.status(400).json({error : "We Cannot Update All Time in try and try"})
@@ -116,48 +93,56 @@ exports.UpdateTime = async (req, res) => {
     }
 }
 
-exports.ClockoutUpdate = async (req, res) => {
+exports.UpdateCheckout = async (req, res) => {
     try {
-        const { UserId , DailyClock , TotalHours } = req.body;
 
-        const findUser = await Attendance.find({UserId : UserId});
-
-        if (!findUser) {
-            res.status(400).json({error : "Clockout is not possible in try  "})
-            return 
+        const Updatetime = await Attendance.findById(req.params.id);
+        if (!Updatetime) {
+            res.status(400).json({error : "unable to find user"})
+            return
         }
-        console.log(findUser)
-        if (findUser) {
-            try {
-                const data = findUser[0].DailyClock[DailyClock.length - 1];
-                console.log(data , "data")
-                // 62bc602ca43e694c7e1afec2
-                const Updateclockout = await Attendance.findByIdAndUpdate(findUser[0]._id , {
-                    $set: {
-                        "DailyClock.-1.ClockOut": DailyClock.ClockOut
-                    }
-                    // DailyClock : {
-                    //     ClockOut : DailyClock[DailyClock.length - 1].ClockOut = DailyClock.ClockOut
-                    // }
-                } , {new : true})
-                console.log(Updateclockout)
-                if (!Updateclockout) {
-                    res.status(400).json({error : "Clockout is not possible in try in try  "})
-                    return
-                }
+        
+        if (Updatetime) {
+            const Clockintime = Updatetime.ClockIn;
+            const inhours = Clockintime.getHours();
+            const inminute = Clockintime.getMinutes();
+            console.log(Clockintime.getHours() , 'Clockintime Hours')
+            console.log(Clockintime.getMinutes() , 'Clockintime')
+            // console.log(Clockintime.getSeconds())
+            const Clockouttime = Date.now()
+            const convertdate = new Date(Clockouttime);
+            const outhours = convertdate.getHours();
+            const outminutes = convertdate.getMinutes();
+
+            const calculatehours = outhours - inhours;
+            const calculateminutes = inminute - outminutes;
+            console.log(convertdate.getHours() , 'Clockouttime Hours')
+            console.log(convertdate.getMinutes() , 'Clockouttime minutes')
             
-                if (Updateclockout) {
-                    res.status(200).json({message : "Clockout is Updated  " , Updateclockout})
-                    return
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
+            console.log(calculatehours , 'calculate hours')
+            console.log(calculateminutes , 'calculate minutes')
+            const time = `${calculatehours}:${calculateminutes}`;
 
+            const UpdateAttendance = await Attendance.findByIdAndUpdate(req.params.id , {
+                ClockOut : Clockouttime,
+                TotalHours : time
+            } , {new : true})
+
+            if (!UpdateAttendance) {
+                res.status(400).json({error : "unable to find user for update"})
+                return
+            }
+
+            if (UpdateAttendance) {
+                res.status(200).json({message : "Clock out time updated" , UpdateAttendance})
+                return
+            }
+
+            return
+        }
     } catch (error) {
         console.log(error)
-        res.status(400).json({error : "Clockout is not possible  "})
+        res.status(400).json({error : "Unable to update clock out time "});
     }
 }
 

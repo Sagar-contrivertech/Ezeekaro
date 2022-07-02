@@ -12,7 +12,7 @@ route.get("/GetAttendanceById/:id" , AuthorizeUser ,  AttendanceController.GetAl
 
 route.put("/UpdateAttendanceById/:id" , AuthorizeUser ,  AttendanceController.UpdateTime)
 
-route.put("/UpdateAttendanceClockoutById" , AuthorizeUser ,  AttendanceController.ClockoutUpdate)
+route.put("/UpdateAttendanceClockoutById/:id" , AuthorizeUser ,  AttendanceController.UpdateCheckout)
 
 route.delete("/DeleteAttendanceById/:id" , AuthorizeUser ,  AttendanceController.DeleteTime)
 

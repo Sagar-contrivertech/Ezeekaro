@@ -6,9 +6,13 @@ const { AuthorizeUser, authorizeRoles, authorizeGrant } = require("../middleware
 
 route.post("/AddSalary" , AuthorizeUser , SalaryController.AddSalary)
 
+route.post("/CalculateSalary/:id/:days" , AuthorizeUser , SalaryController.calculatesalary)
+
 route.get("/GetSalary" , AuthorizeUser , SalaryController.GetSalary)
 
 route.get("/GetSalaryById/:id" , AuthorizeUser , SalaryController.GetSalaryById)
+
+route.get("/GetSalaryMonthly/:id" , AuthorizeUser , SalaryController.GetAllMonthlySalary)
 
 route.put("/UpdateSalaryById/:id" , AuthorizeUser , SalaryController.UpdateSalary)
 

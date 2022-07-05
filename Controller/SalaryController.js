@@ -165,7 +165,7 @@ exports.calculatesalary = async (req, res) => {
             
             if (Addsalary) {
 
-                res.status(400).json({message : "Monthly salary is  added" , Addsalary })
+                res.status(200).json({message : "Monthly salary is  added" , Addsalary })
                 return
             }
         }
